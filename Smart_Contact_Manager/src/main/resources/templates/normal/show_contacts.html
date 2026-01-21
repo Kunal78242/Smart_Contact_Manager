@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{normal/base::layout(~{::section})}"> 
+
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Page</title>
+</head>
+
+<body>
+    <section>
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Your Contacts</h1>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-dark"> 
+                                <tr>
+                                    <th scope="col">#ID</th> 
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col" class="text-center">Actions</th>
+                                </tr>
+                            </thead> 
+                            <tbody>
+                                <tr th:each="c:${contacts.content}">
+                                    <th scope="row" th:text="${'SCMUSER' + c.cId}">1</th>
+                                    
+                                    <td>
+                                        <img th:src="@{'/img/'+${c.image}}" 
+                                             class="rounded-circle mr-2" 
+                                             style="width: 30px; height: 30px; object-fit: cover;"
+                                             alt="profile photo"/>
+                                        <span th:text="${c.name}"></span>
+                                    </td>
+                                    
+                                    <td>
+                                        <a th:href="@{'/user/' + ${c.cId} + '/contact'}">
+                                            <span th:text="${c.email}"></span>
+                                        </a>
+                                    </td>
+                                    
+                                    <td th:text="${c.phone}"></td>
+                                    
+                                    <td class="text-center">
+                                        <!-- FIXED: Corrected delete URL -->
+                                        <a th:href="@{'/user/delete/' + ${c.cId}}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to delete this contact?')">
+                                            Delete
+                                        </a>
+                                        <a th:href="@{'/user/update/' + ${c.cId}}" 
+                                           class="btn btn-primary btn-sm ml-1">
+                                            Update
+                                        </a>
+                                        <a th:href="@{'/user/' + ${c.cId} + '/contact'}" 
+                                           class="btn btn-info btn-sm ml-1">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>                        
+                        </table>
+                    </div>
+                    
+                    <!-- Show message if no contacts -->
+                    <div th:if="${contacts.content.empty}" class="text-center py-5">
+                        <h4 class="text-muted">No contacts found</h4>
+                        <a th:href="@{/user/add-contact}" class="btn btn-primary mt-3">Add Your First Contact</a>
+                    </div>
+                    
+                    <!-- pagination part -->
+                    <nav th:if="${contacts.totalPages > 1}" aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li th:classappend="${currentPage == 0}?'disabled':''" class="page-item">
+                                <a th:href="@{'/user/show-contacts/' + (currentPage - 1)}" 
+                                   class="page-link" 
+                                   th:if="${currentPage > 0}">Previous</a>
+                                <span class="page-link" th:unless="${currentPage > 0}">Previous</span>
+                            </li>
+                            
+                            <li th:each="i:${#numbers.sequence(1, contacts.totalPages)}"
+                                th:classappend="${i-1 == currentPage}?'active':''" 
+                                class="page-item">
+                                <a th:href="@{'/user/show-contacts/' + (i-1)}" 
+                                   class="page-link" 
+                                   th:text="${i}"></a>
+                            </li>
+                            
+                            <li th:classappend="${currentPage+1 == contacts.totalPages}?'disabled':''" 
+                                class="page-item">
+                                <a th:href="@{'/user/show-contacts/' + (currentPage + 1)}" 
+                                   class="page-link" 
+                                   th:if="${currentPage+1 < contacts.totalPages}">Next</a>
+                                <span class="page-link" th:unless="${currentPage+1 < contacts.totalPages}">Next</span>
+                            </li>
+                        </ul>
+                    </nav>
+                    
+                    <div class="text-center mt-4">
+                        <a th:href="@{/user/add-contact}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Add New Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
